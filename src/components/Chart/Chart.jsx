@@ -3,22 +3,23 @@ import {fetchDailyData} from '../../api'
 import { Line, Bar } from 'react-chartjs-2'
 import styles from './Chart.module.css'
 
-const Chart = () =>{
-    const [dailyData, setDailyData] = useState([])
-
+const Chart = ({ data, country }) =>{
+    const [dailyData, setDailyData] = useState({})
+    const {confirmed, recovered, deaths} = data
+    
     useEffect(() =>{
         const fetchAPI = async ()=>{
             setDailyData( await fetchDailyData())
         }
-        fetchAPI()
-    })
+        fetchAPI()  
+    },[])
 
     
 
     const lineChart = (        
         dailyData.length
             ?(<Line
-            data={{
+                data={{
                 labels: dailyData.map(({data})=> data),  
                 datasets: [{
                     data: dailyData.map(({confirmed})=> confirmed),
@@ -29,16 +30,41 @@ const Chart = () =>{
                     data: dailyData.map(({deaths})=> deaths),
                     label: 'Deaths',
                     borderColor: 'red',
-                    backgroundColor: 'rgbs(255, 0, 0, 0.5)',
+                    backgroundColor: 'rgba(255, 0, 0, 0.5)',
                     fill: true
                 }]
             }}
-            />) : null
+            />) : null           
+    )
+
+    const BarChart = (
+        confirmed
+        ?(
+            <Bar
+            data={{
+                labels: ['Infected', 'Recovered', 'Deaths'],
+                datasets:[{
+                    label: 'People',
+                    backgroundColor: [
+                        'rgba(0, 0, 255, 0.5)',
+                        'rgba(0, 255, 0, 0.5)',
+                        'rgba(255, 0, 0, 0.5)',
+                    ],
+                    data:[confirmed.value, recovered.value, deaths.value]
+                }]
+            }}
+            options={{
+                legend: { display: false },
+                title: {display: true, text: `Current state in ${country}`}
+            }}
+
+            />
+        ): null
     )
 
     return(
         <div className={styles.container}> 
-            {lineChart}
+            { country ? BarChart : lineChart }
         </div>
     )
 }

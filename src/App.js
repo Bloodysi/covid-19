@@ -2,13 +2,15 @@ import React, { Component } from 'react'
 import styles from './App.module.css'
 
 import { Cards, Chart, CountryPicker } from './components'
-import Button from '@material-ui/core/Button'
 import { fetchData } from './api'
+
+import coronaImage from './image/covidImage.png'
 
 class App extends Component{    
 
     state = {
-        data: {}
+        data: {},
+        country: ''
     }
 
     async componentDidMount(){
@@ -16,15 +18,21 @@ class App extends Component{
         this.setState({ data: fetchedData })
     }   
 
-    render(){
-        const { data } = this.state
+    handleCountryChange = async country =>{        
+        const fetchedData = await fetchData(country)
+        this.setState({ data: fetchedData, country: country })
+    }
+    
 
+    render(){
+        
+        const { data, country } = this.state
         return(
             <div className={styles.container}>
+                <img className={styles.image} src={coronaImage} alt='COVID-19'/>
                 <Cards data={data}/>
-                <CountryPicker />
-                <Chart />
-                <Button variant='contained' color='secondary' href='/'>React</Button>
+                <CountryPicker handleCountryChange={this.handleCountryChange}/>
+                <Chart data={data} country={country}/>
             </div>
         )
     }
