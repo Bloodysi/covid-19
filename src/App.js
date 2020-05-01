@@ -33,7 +33,6 @@ class App extends Component{
                 <Cards data={data}/>
                 <CountryPicker handleCountryChange={this.handleCountryChange}/>
                 <Chart data={data} country={country}/>
-                <h4 className={styles.name}>Carlos Bueno</h4>
             </div>
         )
     }
